@@ -2,11 +2,13 @@ module github.com/openccu-lite/lite-addon-notify
 
 go 1.25.0
 
-require github.com/nikolalohinski/gonja/v2 v2.9.1
+require (
+	github.com/hobbyquaker/ccu-addon-kit/go v0.0.0-20261117205411-d8a1f487ff8d
+	github.com/nikolalohinski/gonja/v2 v2.9.1
+)
 
 require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/hobbyquaker/ccu-addon-kit/go v0.0.0-20261117205411-d8a1f487ff8d // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
