@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/openccu-lite/lite-addon-notify/internal/config"
+	"github.com/openccu-lite/lite-addon-notify/internal/fakesys"
 )
 
 // smtpMock is a small SMTP server: EHLO, STARTTLS, AUTH PLAIN and LOGIN, MAIL, RCPT, DATA.
@@ -270,4 +271,27 @@ func TestEmailErrors(t *testing.T) {
 	// addresses
 	ch.Host, ch.Sender = "127.0.0.1", "nobody"
 	wantErr(t, send(t, ch), StepConfig, true, "sender")
+}
+
+// The fake system's SMTP server (the page's development, a lab check) takes the channel's mail.
+func TestEmailToTheFakeSystem(t *testing.T) {
+	fs := fakesys.New()
+	defer fs.Close()
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer l.Close()
+	go func() { _ = fs.ServeSMTP(l) }()
+	ch := config.Channel{Type: config.Email, Host: "127.0.0.1", Port: l.Addr().(*net.TCPAddr).Port, Security: "none", User: "user", Password: "pass", Sender: "ccu@example.org", Target: "a@example.org"}
+	if err := send(t, ch); err != nil {
+		t.Fatal(err)
+	}
+	if m := fs.Mails(); len(m) != 1 || !strings.Contains(m[0], "Subject: ") {
+		t.Fatalf("mails: %v", m)
+	}
+	ch.Password = "wrong"
+	wantErr(t, send(t, ch), StepLogin, true, "535")
+	ch.Password, ch.Target = "pass", "x@nobody.invalid"
+	wantErr(t, send(t, ch), StepRecipient, true, "550 5.1.1 User unknown")
 }

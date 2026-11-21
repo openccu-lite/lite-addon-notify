@@ -46,6 +46,7 @@ type Server struct {
 	// (the path's first element after /sink/) another status than 200.
 	Sink       []Request
 	SinkStatus map[string]int
+	mails      []string
 }
 
 // New makes a fake system with a few named devices.
@@ -286,6 +287,13 @@ func (s *Server) Handler() http.Handler {
 		l := s.Sunk()
 		if l == nil {
 			l = []Request{}
+		}
+		writeJSON(w, 200, l)
+	})
+	mux.HandleFunc("GET /dev/mails", func(w http.ResponseWriter, r *http.Request) {
+		l := s.Mails()
+		if l == nil {
+			l = []string{}
 		}
 		writeJSON(w, 200, l)
 	})

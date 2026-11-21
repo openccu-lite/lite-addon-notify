@@ -6,6 +6,7 @@ package main
 import (
 	"flag"
 	"log"
+	"net"
 	"net/http"
 
 	"github.com/openccu-lite/lite-addon-notify/internal/fakesys"
@@ -13,9 +14,18 @@ import (
 
 func main() {
 	addr := flag.String("addr", "127.0.0.1:18080", "the address to listen on")
+	smtp := flag.String("smtp", "", "also serve a small SMTP server there (user \"user\", password \"pass\"; GET /dev/mails shows what it took)")
 	flag.Parse()
 	s := fakesys.New()
 	defer s.Close()
+	if *smtp != "" {
+		l, err := net.Listen("tcp", *smtp)
+		if err != nil {
+			log.Fatal(err)
+		}
+		go func() { log.Print(s.ServeSMTP(l)) }()
+		log.Printf("fakesystem: SMTP on %s", *smtp)
+	}
 	s.SetWarnings(fakesys.Warning("backup-unencrypted", "plain", "warning", nil))
 	log.Printf("fakesystem: on %s", *addr)
 	log.Fatal(http.ListenAndServe(*addr, s.Handler()))
