@@ -103,6 +103,8 @@ type Dispatcher struct {
 	o       Options
 	mu      sync.Mutex
 	workers map[string]*worker
+	// seed is each channel's state as the stored history tells it, until its worker starts
+	seed    map[string]Status
 	history []Record
 	dirty   bool
 	ctx     context.Context
@@ -132,11 +134,37 @@ func New(o Options) *Dispatcher {
 	if o.Context == nil {
 		o.Context = context.Background()
 	}
-	d := &Dispatcher{o: o, workers: map[string]*worker{}, ctx: o.Context}
+	d := &Dispatcher{o: o, workers: map[string]*worker{}, seed: map[string]Status{}, ctx: o.Context}
 	if o.HistoryFile != "" {
 		if b, err := os.ReadFile(o.HistoryFile); err == nil {
 			_ = json.Unmarshal(b, &d.history)
 		}
+	}
+	// what the history says about each channel is where its state starts after a restart: a
+	// channel that worked yesterday is not "unused" today
+	for _, r := range d.history {
+		st := d.seed[r.Channel]
+		if r.Kind == message.KindTest {
+			// a test tells when the channel last worked or failed; it is no delivery
+			if r.Result == Sent {
+				st.LastOK = r.Time
+			} else {
+				st.LastError, st.LastStep, st.LastErrorAt = r.Error, r.Step, r.Time
+			}
+			d.seed[r.Channel] = st
+			continue
+		}
+		switch r.Result {
+		case Sent:
+			st.Sent++
+			st.LastOK, st.Failing = r.Time, false
+		case GaveUp:
+			st.Failed++
+			st.LastError, st.LastStep, st.LastErrorAt, st.Failing = r.Error, r.Step, r.Time, true
+		case Failed:
+			st.LastError, st.LastStep, st.LastErrorAt = r.Error, r.Step, r.Time
+		}
+		d.seed[r.Channel] = st
 	}
 	return d
 }
@@ -226,6 +254,9 @@ func (d *Dispatcher) Status() map[string]Status {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	out := map[string]Status{}
+	for id, st := range d.seed {
+		out[id] = st
+	}
 	for id, w := range d.workers {
 		s := w.status
 		s.Queued = len(w.jobs)
@@ -244,7 +275,7 @@ func (d *Dispatcher) Enqueue(channels []string, m message.Message) {
 		d.mu.Lock()
 		w := d.workers[id]
 		if w == nil {
-			w = &worker{jobs: make(chan job, QueueSize)}
+			w = &worker{jobs: make(chan job, QueueSize), status: d.seed[id]}
 			d.workers[id] = w
 			d.wg.Add(1)
 			go d.work(d.ctx, id, w)
@@ -379,12 +410,35 @@ func (d *Dispatcher) deliver(ctx context.Context, id string, w *worker, m messag
 // records the result.
 func (d *Dispatcher) Test(ctx context.Context, ch config.Channel, m message.Message) error {
 	err := d.o.Send(ctx, ch, m)
-	if ch.ID != "" {
-		if err != nil {
-			d.record(ch, m, GaveUp, 1, err)
-		} else {
-			d.record(ch, m, Sent, 1, nil)
-		}
+	if ch.ID == "" {
+		return err
 	}
+	if err != nil {
+		d.record(ch, m, GaveUp, 1, err)
+	} else {
+		d.record(ch, m, Sent, 1, nil)
+	}
+	// the page's state of the channel follows its test: last success, last failure. It does not
+	// count as a delivery and does not start or end "failing", which is the queue's word.
+	d.mu.Lock()
+	st := d.seed[ch.ID]
+	if w := d.workers[ch.ID]; w != nil {
+		st = w.status
+	}
+	if err != nil {
+		st.LastError, st.LastStep, st.LastErrorAt = err.Error(), "", d.o.Now()
+		var ce *channel.Error
+		if errors.As(err, &ce) {
+			st.LastError, st.LastStep = ce.Msg, ce.Step
+		}
+	} else {
+		st.LastOK = d.o.Now()
+	}
+	if w := d.workers[ch.ID]; w != nil {
+		w.status = st
+	} else {
+		d.seed[ch.ID] = st
+	}
+	d.mu.Unlock()
 	return err
 }

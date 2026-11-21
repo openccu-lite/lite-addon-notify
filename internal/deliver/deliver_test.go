@@ -228,7 +228,7 @@ func TestSwitchedOffAndHistoryFile(t *testing.T) {
 		t.Errorf("history: %+v", h)
 	}
 	// a test goes out at once and is recorded for a saved channel
-	if err := r.d.Test(context.Background(), config.Channel{ID: "b", Name: "B"}, m("test")); err != nil {
+	if err := r.d.Test(context.Background(), config.Channel{ID: "b", Name: "B"}, message.Message{ID: "t", Kind: message.KindTest, Title: "test"}); err != nil {
 		t.Fatal(err)
 	}
 	if err := r.d.Test(context.Background(), config.Channel{Name: "unsaved"}, m("test")); err != nil {
@@ -245,6 +245,10 @@ func TestSwitchedOffAndHistoryFile(t *testing.T) {
 	d2 := New(Options{HistoryFile: r.d.o.HistoryFile, Channel: func(string) (config.Channel, bool) { return config.Channel{}, false }, Settings: func() config.Settings { return config.Settings{} }})
 	if len(d2.History()) != 2 {
 		t.Errorf("after a restart: %+v", d2.History())
+	}
+	// and with it what the page says about the channels: one that worked is not "unused"
+	if st := d2.Status(); st["b"].Sent != 0 || st["b"].LastOK.IsZero() || st["b"].Failing || st["a"].Sent != 0 {
+		t.Errorf("status after a restart: %+v", st)
 	}
 	d2.Clear()
 	if len(d2.History()) != 0 {
