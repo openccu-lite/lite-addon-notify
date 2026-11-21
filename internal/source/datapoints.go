@@ -78,7 +78,8 @@ func (s *Sources) watch(ctx context.Context, wanted map[string]bool) {
 		}
 		now := s.o.Now()
 		for _, e := range snap.Entries {
-			if !wanted[e.Interface+"|"+e.Address+"|"+e.Key] || !e.Confirmed {
+			// the store's last key press is history, not a press: only an event is one
+			if !wanted[e.Interface+"|"+e.Address+"|"+e.Key] || !e.Confirmed || engine.Momentary(e.Key) {
 				continue
 			}
 			at := e.LC
@@ -115,7 +116,8 @@ func (s *Sources) watch(ctx context.Context, wanted map[string]bool) {
 			switch {
 			case m.Event != nil && (m.Type == "event" || m.Type == "state"):
 				e := m.Event
-				if wanted[e.Interface+"|"+e.Address+"|"+e.Key] {
+				// a "state" message is the store's sweep telling a value it read, not an event
+				if wanted[e.Interface+"|"+e.Address+"|"+e.Key] && !(m.Type == "state" && engine.Momentary(e.Key)) {
 					now := s.o.Now()
 					at := e.TS
 					if at.IsZero() {

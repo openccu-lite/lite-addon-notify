@@ -294,6 +294,27 @@ func TestDatapoints(t *testing.T) {
 	if got != "win: Resolved: Fenster Küche: open" {
 		t.Errorf("resolved: %s", got)
 	}
+	// a key press the state store remembers is not a press: a rule on it fires on the event only
+	r.fs.Lite.State = append(r.fs.Lite.State, map[string]any{"interface": "HmIP-RF", "address": "HmIP-RCV-1:1", "datapoint": "PRESS_SHORT", "value": true, "ts": time.Now().UTC().Format(time.RFC3339), "confirmed": true, "source": "event"})
+	r.mu.Lock()
+	r.c.Rules = append(r.c.Rules, config.Rule{ID: "key", Name: "Key", Enabled: true, Source: config.SrcDatapoint, Channels: []string{}, Priority: message.Normal,
+		Datapoint: &config.Datapoint{Interface: "HmIP-RF", Address: "HmIP-RCV-1:1", Key: "PRESS_SHORT", Op: "true", Label: "pressed"}})
+	r.mu.Unlock()
+	r.src.Kick()
+	wait("the stream follows the rules", func() bool {
+		q := r.fs.Lite.Queries()
+		return r.fs.Lite.Streams() == 1 && len(q) > 0 && strings.Contains(q[len(q)-1], "PRESS_SHORT") && r.src.States()["datapoints"].Stream
+	})
+	time.Sleep(100 * time.Millisecond)
+	if got := r.titles(); got != "" {
+		t.Fatalf("the remembered press fired: %s", got)
+	}
+	r.fs.Lite.PushEvent("HmIP-RF", "HmIP-RCV-1:1", "PRESS_SHORT", true)
+	got = ""
+	wait("the press fires", func() bool { got += r.titles(); return got != "" })
+	if got != "key: HmIP-RCV-1:1: pressed" {
+		t.Errorf("press: %s", got)
+	}
 	// the rule goes: the stream closes
 	r.mu.Lock()
 	r.c.Rules = r.c.Rules[:3]
