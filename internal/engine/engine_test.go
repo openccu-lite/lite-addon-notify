@@ -303,6 +303,31 @@ func TestDatapointRule(t *testing.T) {
 	}
 }
 
+// A key press is an event: every press is a message, nothing is resolved, nothing is remembered.
+func TestDatapointKeyPress(t *testing.T) {
+	r := config.Rule{ID: "bell", Name: "Bell", Enabled: true, Source: config.SrcDatapoint, Channels: []string{}, Priority: message.High, Resolved: true,
+		Datapoint: &config.Datapoint{Interface: "HmIP-RF", Address: "A:1", Key: "PRESS_SHORT", Op: "true", Label: "the bell rang"}}
+	f := newFake(t, r)
+	press := func() { f.e.Value("HmIP-RF", "A:1", "PRESS_SHORT", json.RawMessage("true"), f.now, f.now) }
+	press()
+	f.run(time.Second)
+	press()
+	f.run(time.Second)
+	out := f.take()
+	if len(out) != 2 || out[0].Message.Title != "Kitchen window: the bell rang" || out[1].Message.Resolved {
+		t.Fatalf("two presses: %+v", out)
+	}
+	if len(f.e.OpenDatapoints()) != 0 {
+		t.Error("a key press stays open")
+	}
+	f.run(2 * time.Hour)
+	press()
+	f.run(time.Second)
+	if len(f.take()) != 1 {
+		t.Error("a later press")
+	}
+}
+
 func TestEval(t *testing.T) {
 	tests := []struct {
 		op, value, raw string

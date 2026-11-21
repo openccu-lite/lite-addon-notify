@@ -82,6 +82,9 @@ func Eval(d *config.Datapoint, raw json.RawMessage) (truth, ok bool) {
 	return false, false
 }
 
+// Momentary says whether a datapoint reports events rather than a state (a key press).
+func Momentary(key string) bool { return strings.HasPrefix(key, "PRESS_") }
+
 // Wanted answers the datapoints the enabled datapoint rules watch, as "interface|address|key".
 func Wanted(c config.Config) map[string]bool {
 	out := map[string]bool{}
@@ -112,6 +115,16 @@ func (e *Engine) Value(iface, address, key string, raw json.RawMessage, at, now 
 		}
 		truth, ok := Eval(d, raw)
 		if !ok {
+			continue
+		}
+		// a key press is an event, not a state: it is true every time and never turns false,
+		// so every press that meets the condition is its own message, with nothing to resolve
+		if Momentary(key) {
+			if truth {
+				ev := e.dpEvent(r, &dpState{Value: raw}, false, now, c)
+				ev.Key, ev.Once = "dp/"+strconv.FormatInt(now.UnixNano(), 36), true
+				e.handle(ev, now, c)
+			}
 			continue
 		}
 		st.Value = append(json.RawMessage(nil), raw...)
