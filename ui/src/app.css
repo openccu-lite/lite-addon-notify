@@ -1,0 +1,770 @@
+/* The page's own rules on top of occulite-ui's tokens. Colours are the kit's custom properties
+   only, so dark mode comes with them. Nothing changes its box with its state: pills have a fixed
+   width, the live count reserves its line. */
+
+html,
+body,
+#app {
+    height: 100%;
+    margin: 0;
+}
+
+.nfy-app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+.nfy-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 12px 0;
+    flex-wrap: wrap;
+}
+
+.nfy-header h1 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 4px 0 0;
+}
+
+.nfy-spacer {
+    flex: 1;
+}
+
+.nfy-page {
+    flex: 1;
+    min-height: 0;
+    padding: 8px 12px 24px;
+    overflow: auto;
+}
+
+.nfy-banner {
+    margin: 6px 12px 0;
+    padding: 6px 10px;
+    border: 1px solid var(--hmm-error, #c33);
+    border-radius: var(--hmm-radius, 4px);
+}
+
+.nfy-section {
+    max-width: 64rem;
+    margin: 0 0 18px;
+}
+
+.nfy-section h2 {
+    font-size: 1rem;
+    margin: 12px 0 8px;
+}
+
+.nfy-section h3 {
+    font-size: 0.95rem;
+    margin: 12px 0 6px;
+}
+
+.nfy-section-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nfy-section-head h2 {
+    flex: 1;
+}
+
+.nfy-form {
+    display: grid;
+    grid-template-columns: 15rem minmax(0, 30rem);
+    gap: 8px 12px;
+    align-items: center;
+}
+
+.nfy-form .nfy-check,
+.nfy-form .nfy-help,
+.nfy-form .nfy-span {
+    grid-column: 1 / -1;
+}
+
+.nfy-form input[type='text'],
+.nfy-form input[type='password'],
+.nfy-form input[type='number'],
+.nfy-form select,
+.nfy-form textarea {
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.nfy-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.nfy-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nfy-label {
+    color: var(--hmm-fg-muted, inherit);
+}
+
+.nfy-actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+}
+
+.nfy-help,
+.nfy-muted {
+    color: var(--hmm-fg-muted, inherit);
+    font-size: var(--hmm-font-size-small, 0.9em);
+}
+
+.nfy-help {
+    margin: 0;
+}
+
+.nfy-notice {
+    padding: 6px 10px;
+    border-left: 3px solid var(--hmm-accent, #2a7de1);
+    background: var(--hmm-bg-sunken, transparent);
+}
+
+.nfy-warning {
+    padding: 6px 10px;
+    border-left: 3px solid var(--hmm-warn, #c80);
+    background: var(--hmm-bg-sunken, transparent);
+}
+
+.nfy-error {
+    color: var(--hmm-error, #c33);
+    min-height: 1.4em;
+    margin: 4px 0;
+}
+
+.nfy-code {
+    font-family: var(--hmm-font-mono, monospace);
+    font-size: var(--hmm-font-size-small, 0.9em);
+    word-break: break-all;
+}
+
+button.nfy-primary,
+button.nfy-primary:hover:not(:disabled) {
+    background: var(--hmm-accent, #0070c1);
+    color: var(--hmm-accent-fg, #fff);
+    border-color: transparent;
+}
+
+button.nfy-danger {
+    background: var(--hmm-error, #c33);
+    color: #fff;
+    border-color: transparent;
+}
+
+.nfy-grid {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.nfy-grid th,
+.nfy-grid td {
+    text-align: left;
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--hmm-border-muted, #8883);
+    vertical-align: middle;
+}
+
+.nfy-grid th {
+    font-weight: 600;
+    color: var(--hmm-fg-muted, inherit);
+}
+
+.nfy-grid-compact th,
+.nfy-grid-compact td {
+    padding: 2px 6px;
+    font-size: var(--hmm-font-size-small, 0.9em);
+}
+
+.nfy-subrow td {
+    border-bottom-width: 2px;
+    padding-top: 0;
+}
+
+.nfy-cell-actions {
+    white-space: nowrap;
+    text-align: right !important;
+}
+
+.nfy-cell-actions button + button {
+    margin-left: 4px;
+}
+
+.nfy-scroll {
+    max-height: 50vh;
+    overflow: auto;
+}
+
+/* a pill keeps its box across states: fixed width, the text cut */
+.nfy-pill {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 9.5em;
+    padding: 0 8px;
+    border-radius: 999px;
+    font-size: 0.85em;
+    line-height: 1.6;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: 1px solid var(--hmm-border, #8884);
+}
+
+.nfy-pill.ok {
+    border-color: var(--hmm-ok, #2a8a3e);
+    color: var(--hmm-ok, #2a8a3e);
+}
+
+.nfy-pill.bad {
+    border-color: var(--hmm-error, #c33);
+    color: var(--hmm-error, #c33);
+}
+
+.nfy-kv {
+    display: grid;
+    grid-template-columns: minmax(12rem, max-content) 1fr;
+    gap: 4px 16px;
+    align-items: center;
+}
+
+.nfy-kv > span:nth-child(odd) {
+    color: var(--hmm-fg-muted, inherit);
+}
+
+.nfy-list {
+    margin: 0;
+    padding-left: 1.2em;
+}
+
+/* the status cards */
+.nfy-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 100%;
+    min-height: 0;
+}
+
+.nfy-editor-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nfy-editor-top input {
+    width: 18rem;
+}
+
+.nfy-count {
+    flex: 1;
+    text-align: right;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nfy-editor-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
+}
+
+.nfy-tree-pane,
+.nfy-criteria-pane {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 0;
+    overflow: auto;
+    border: 1px solid var(--hmm-border-muted, #8883);
+    border-radius: var(--hmm-radius, 4px);
+    padding: 6px;
+}
+
+.nfy-tree-pane input[type='search'] {
+    flex: 1;
+}
+
+.nfy-tree,
+.nfy-tree ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nfy-tree ul {
+    padding-left: 2.2em;
+}
+
+.nfy-tree-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 1.8em;
+}
+
+.nfy-tree-name {
+    white-space: nowrap;
+}
+
+.nfy-tree-meta {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nfy-twisty {
+    width: 1.6em;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: inherit;
+}
+
+.nfy-preview {
+    height: 26%;
+    min-height: 6rem;
+    overflow: auto;
+}
+
+.nfy-chips label {
+    display: block;
+    font-size: var(--hmm-font-size-small, 0.9em);
+    color: var(--hmm-fg-muted, inherit);
+    margin-bottom: 2px;
+}
+
+.nfy-chips-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+}
+
+.nfy-chips-box input {
+    flex: 1;
+    min-width: 10rem;
+}
+
+.nfy-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0 2px 0 8px;
+    border-radius: 999px;
+    border: 1px solid var(--hmm-border, #8884);
+    background: var(--hmm-control-bg, transparent);
+    font-size: var(--hmm-font-size-small, 0.9em);
+}
+
+.nfy-chip button {
+    border: none;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+input.nfy-invalid {
+    outline: 2px solid var(--hmm-error, #c33);
+}
+
+.nfy-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+input.nfy-narrow {
+    width: 5em;
+}
+
+/* a button whose label changes keeps its width */
+button.nfy-fixed {
+    min-width: 6.5em;
+}
+
+/* the countdown banner and the status cards */
+.nfy-countdown {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 6px 12px 0;
+    padding: 8px 12px;
+    border: 1px solid var(--hmm-error, #c33);
+    border-left-width: 4px;
+    border-radius: var(--hmm-radius, 4px);
+    background: var(--hmm-bg-sunken, transparent);
+    flex-wrap: wrap;
+}
+
+.nfy-small {
+    font-size: var(--hmm-font-size-small, 0.9em);
+}
+
+.nfy-faint {
+    color: var(--hmm-fg-faint, var(--hmm-fg-muted, inherit));
+    font-size: 0.85em;
+}
+
+.nfy-mono {
+    font-family: var(--hmm-font-mono, monospace);
+    font-size: var(--hmm-font-size-small, 0.9em);
+}
+
+.nfy-nowrap {
+    white-space: nowrap;
+}
+
+.nfy-ok {
+    color: var(--hmm-ok, #2a8a3e);
+}
+
+.nfy-error-inline {
+    color: var(--hmm-error, #c33);
+}
+
+.nfy-section-wide {
+    max-width: none;
+}
+
+.nfy-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(26rem, 1fr));
+    gap: 14px;
+    max-width: 90rem;
+}
+
+.nfy-card {
+    border: 1px solid var(--hmm-border, #8884);
+    border-radius: var(--hmm-radius, 4px);
+    padding: 10px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--hmm-bg-raised, transparent);
+}
+
+.nfy-card-critical {
+    border-color: var(--hmm-error, #c33);
+}
+
+.nfy-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.nfy-card-head h2 {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+/* flags are chips with a fixed height; their text does not change the row */
+.nfy-flags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    min-height: 1.8em;
+    align-items: center;
+}
+
+.nfy-flag {
+    display: inline-block;
+    padding: 0 8px;
+    border-radius: 999px;
+    border: 1px solid var(--hmm-border, #8884);
+    line-height: 1.7;
+    font-size: 0.9em;
+    white-space: nowrap;
+}
+
+.nfy-flag.ok {
+    border-color: var(--hmm-ok, #2a8a3e);
+    color: var(--hmm-ok, #2a8a3e);
+}
+
+.nfy-flag.warn {
+    border-color: var(--hmm-warn, #c80);
+    color: var(--hmm-warn, #c80);
+}
+
+.nfy-flag.bad {
+    border-color: var(--hmm-error, #c33);
+    color: var(--hmm-error, #c33);
+}
+
+.nfy-pill.warn {
+    border-color: var(--hmm-warn, #c80);
+    color: var(--hmm-warn, #c80);
+}
+
+.nfy-meters {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.nfy-meter {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.nfy-meter-label {
+    color: var(--hmm-fg-muted, inherit);
+    font-size: var(--hmm-font-size-small, 0.9em);
+}
+
+.nfy-meter-value {
+    font-size: 1.3rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.nfy-meter-value.bad {
+    color: var(--hmm-error, #c33);
+}
+
+.nfy-meter-value.warn {
+    color: var(--hmm-warn, #c80);
+}
+
+.nfy-bar {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--hmm-border-muted, #8883);
+    overflow: hidden;
+}
+
+.nfy-bar-fill {
+    height: 100%;
+    background: var(--hmm-accent, #2a7de1);
+    transition: width 0.4s;
+}
+
+.nfy-bar-fill.ok {
+    background: var(--hmm-ok, #2a8a3e);
+}
+
+.nfy-bar-fill.warn {
+    background: var(--hmm-warn, #c80);
+}
+
+.nfy-bar-fill.bad {
+    background: var(--hmm-error, #c33);
+}
+
+.nfy-kv-compact {
+    grid-template-columns: minmax(8rem, max-content) 1fr;
+    gap: 2px 12px;
+    font-size: var(--hmm-font-size-small, 0.9em);
+}
+
+.nfy-reasons {
+    padding: 6px 10px;
+    border-left: 3px solid var(--hmm-error, #c33);
+    background: var(--hmm-bg-sunken, transparent);
+}
+
+.nfy-details summary {
+    cursor: pointer;
+    color: var(--hmm-fg-muted, inherit);
+    font-size: var(--hmm-font-size-small, 0.9em);
+}
+
+.nfy-details table {
+    margin-top: 6px;
+    max-height: 18rem;
+}
+
+.nfy-probe {
+    margin-top: 10px;
+    align-items: flex-start;
+}
+
+.nfy-checklist label.nfy-check {
+    flex-wrap: wrap;
+}
+
+.nfy-checklist input.nfy-narrow {
+    width: 5em;
+}
+
+.nfy-grid tr.bad td {
+    color: var(--hmm-error, #c33);
+}
+
+.nfy-grid tr.warn td {
+    color: var(--hmm-warn, #c80);
+}
+
+.nfy-actions .nfy-spacer {
+    flex: 1;
+}
+
+@media (max-width: 40rem) {
+    .nfy-meters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* notify's own */
+.nfy-linklike {
+    border: none;
+    background: none;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.nfy-linklike:hover {
+    text-decoration: underline;
+}
+
+.nfy-body {
+    margin: 4px 0;
+    padding: 6px 8px;
+    white-space: pre-wrap;
+    font: inherit;
+    font-size: var(--hmm-font-size-small, 0.9em);
+    background: var(--hmm-bg-sunken, transparent);
+    border-radius: var(--hmm-radius, 4px);
+}
+
+.nfy-type-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+    gap: 8px;
+}
+
+.nfy-type-grid button {
+    padding: 10px 8px;
+}
+
+.nfy-checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+}
+
+/* the Test button's result keeps its lines: the dialog does not jump when it arrives */
+.nfy-result {
+    min-height: 2.8em;
+    margin: 6px 0 0;
+}
+
+.nfy-preview-box {
+    grid-column: 1 / -1;
+    border: 1px solid var(--hmm-border-muted, #8883);
+    border-radius: var(--hmm-radius, 4px);
+    padding: 8px 10px;
+    min-height: 4.5em;
+    background: var(--hmm-bg-sunken, transparent);
+}
+
+.nfy-preview-box strong {
+    display: block;
+}
+
+.nfy-preview-box pre {
+    margin: 4px 0 0;
+    white-space: pre-wrap;
+    font: inherit;
+}
+
+.nfy-headers {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto;
+    gap: 4px;
+}
+
+.nfy-secret-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.nfy-secret-row input {
+    flex: 1;
+    min-width: 0;
+}
+
+details.nfy-more {
+    grid-column: 1 / -1;
+}
+
+details.nfy-more > summary {
+    cursor: pointer;
+    color: var(--hmm-fg-muted, inherit);
+    margin-bottom: 8px;
+}
+
+.nfy-form-inner {
+    display: grid;
+    grid-template-columns: 15rem minmax(0, 30rem);
+    gap: 8px 12px;
+    align-items: center;
+}
+
+.nfy-form-inner .nfy-check,
+.nfy-form-inner .nfy-help {
+    grid-column: 1 / -1;
+}
+
+.nfy-form-inner input[type='text'],
+.nfy-form-inner input[type='password'],
+.nfy-form-inner input[type='number'],
+.nfy-form-inner select,
+.nfy-form-inner textarea {
+    box-sizing: border-box;
+    width: 100%;
+}
+
+button.nfy-switch {
+    min-width: 4.5em;
+}
+.nfy-off td:not(.nfy-cell-actions) { opacity: 0.55; }
+
+.nfy-cond {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 7em;
+    gap: 6px;
+}
+
+.nfy-section > .nfy-help {
+    margin-top: 8px;
+}
+
+.nfy-form input.nfy-time,
+input.nfy-time {
+    width: 9em;
+}
+
+.nfy-form input.nfy-narrow {
+    width: 7em;
+}
