@@ -39,11 +39,8 @@ func TestManifest(t *testing.T) {
 	if m.Description["de"] == "" || m.Description["en"] == "" || m.Runtime.Note["de"] == "" || m.Runtime.Note["en"] == "" {
 		t.Error("the description and the note in both languages")
 	}
-	for _, scope := range m.Runtime.APIScopes {
-		if !strings.Contains(m.Runtime.Note["en"], scope) || !strings.Contains(m.Runtime.Note["de"], scope) {
-			t.Errorf("the note does not explain %s", scope)
-		}
-	}
+	// the note is the catalogue's text for users (occulited task 188), no longer the technical account
+	// of scopes, ports and contacts; those are the manifest's keys
 	for _, text := range []string{m.Description["de"], m.Description["en"], m.Runtime.Note["de"], m.Runtime.Note["en"]} {
 		if strings.Contains(strings.ToLower(text), " box") {
 			t.Error("user-facing text says \"the system\"")
