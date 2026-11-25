@@ -16,6 +16,8 @@ github.com/google/pprof v0.0.0-20250403155104-27863c87afa6 h1:BHT72Gu3keYf3ZEu2J
 github.com/google/pprof v0.0.0-20250403155104-27863c87afa6/go.mod h1:boTsfXsheKC2y+lKOCMpSfarhxDeIzfZG1jqGcPl3cA=
 github.com/hobbyquaker/ccu-addon-kit/go v0.0.0-20261117205411-d8a1f487ff8d h1:6lJNvXiF2hwrHESodBsspFWibMud+dBhs3fgeTzbDuM=
 github.com/hobbyquaker/ccu-addon-kit/go v0.0.0-20261117205411-d8a1f487ff8d/go.mod h1:IShVNKzAsWAa9IkyYUP/iXwaG1DoxoEGbgODw1XeCTE=
+github.com/hobbyquaker/ccu-addon-kit/go v0.0.0-20261125220423-1f064ae6e9c8 h1:gGRNxlop5aFG2A0L+1xY/OtOrMq7mYLU5lLped/UGHo=
+github.com/hobbyquaker/ccu-addon-kit/go v0.0.0-20261125220423-1f064ae6e9c8/go.mod h1:IShVNKzAsWAa9IkyYUP/iXwaG1DoxoEGbgODw1XeCTE=
 github.com/json-iterator/go v1.1.12 h1:PV8peI4a0ysnczrg+LtxykD8LfKY9ML6u2jnxaEnrnM=
 github.com/json-iterator/go v1.1.12/go.mod h1:e30LSqwooZae/UwlEbR2852Gd8hjQvJoHmT4TnhNGBo=
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=

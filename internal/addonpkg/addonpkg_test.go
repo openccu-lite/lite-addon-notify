@@ -36,12 +36,16 @@ func TestManifest(t *testing.T) {
 	if m.Backup != nil {
 		t.Error("no backup block: the configuration is one file in the system's backup, the state is not worth one")
 	}
-	if m.Description["de"] == "" || m.Description["en"] == "" || m.Runtime.Note["de"] == "" || m.Runtime.Note["en"] == "" {
-		t.Error("the description and the note in both languages")
+	if m.Description["de"] == "" || m.Description["en"] == "" || m.Runtime.Technical["de"] == "" || m.Runtime.Technical["en"] == "" ||
+		m.Runtime.Note["de"] == "" || m.Runtime.Note["en"] == "" {
+		t.Error("the description, the note and the technical text in both languages")
 	}
-	// the note is the catalogue's text for users (occulited task 188), no longer the technical account
-	// of scopes, ports and contacts; those are the manifest's keys
-	for _, text := range []string{m.Description["de"], m.Description["en"], m.Runtime.Note["de"], m.Runtime.Note["en"]} {
+	for _, scope := range m.Runtime.APIScopes {
+		if !strings.Contains(m.Runtime.Technical["en"], scope) || !strings.Contains(m.Runtime.Technical["de"], scope) {
+			t.Errorf("the technical text does not explain %s", scope)
+		}
+	}
+	for _, text := range []string{m.Description["de"], m.Description["en"], m.Runtime.Technical["de"], m.Runtime.Note["de"], m.Runtime.Technical["en"], m.Runtime.Note["en"]} {
 		if strings.Contains(strings.ToLower(text), " box") {
 			t.Error("user-facing text says \"the system\"")
 		}
